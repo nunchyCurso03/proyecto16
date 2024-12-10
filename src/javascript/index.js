@@ -1,0 +1,21 @@
+$(function () {
+    console.log("Arrancamos");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+});
