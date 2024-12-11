@@ -22,12 +22,14 @@
 </head>
 
 <body>
+
+    <div id ="maestro">
     <h1>Maestro</h1>
     <p>
-        <button type="button" class="btn btn-primary btn-lg">Refrescar</button>
-        <button type="button" class="btn btn-default btn-lg">Nuevo</button>     
+        <button type="button" class="btn btn-primary btn-lg" id="botonRefrescar">Refrescar</button>
+        <button type="button" class="btn btn-default btn-lg" id="botonNuevo">Nuevo</button>
     </p>
- <!-- Los titulos de la tabla -->
+    <!-- Los titulos de la tabla -->
     <div class="row">
         <div class="col-md-4">
             <h4>NOMBRE</h4>
@@ -35,38 +37,50 @@
         <div class="col-md-4">
             <h4>APELLIDO</h4>
         </div>
-        <div class="col-md-4"> 
+        <div class="col-md-4">
             <h4>ACCION</h4>
         </div>
-      </div>
-      <hr>
+    </div>
+    <hr>
 
-       <!-- Los nombres -->
-       <div class="row">
+    <!-- Los nombres -->
+    <div class="row" id="listado">
         <div class="col-md-4">
             <h4> </h4>
         </div>
         <div class="col-md-4">
             <h4> </h4>
         </div>
-        <div class="col-md-4"> 
+        <div class="col-md-4">
             <button type="button" class="btn btn-default btn-lg">Borrar</button>
         </div>
-      </div>
+    </div>
+
+</div>
+
+<div id="detalle">
 
     <h1>Detalle</h1>
-     
-        <form>
-            <form>
-                <div class="form-group row">
-                    <label for="nombre" class="col-xs-6 col-md-4 control-label">Nombre</label>
-                    <div class="col-xs-6 col-md-4">
-                        <input type="text" class="form-control" id="nombre" placeholder="Escribe tu nombre">
-                    </div>
-                </div>
-            </form>
-   
-     
+
+
+    <form>
+        <div class="form-group row">
+            <label for="nombre" class="col-xs-6 col-md-4 control-label">Nombre</label>
+            <div class="col-xs-6 col-md-4">
+                <input type="text" class="form-control" id="nombre" placeholder="Escribe tu nombre">
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="nombre" class="col-xs-6 col-md-4 control-label">Apellido</label>
+            <div class="col-xs-6 col-md-4">
+                <input type="text" class="form-control" id="nombre" placeholder="Escribe tu nombre">
+            </div>
+        </div>
+    </form>
+</div>
+
+
 
     <script src="../node_modules/jquery/dist/jquery.js"></script>
     <script src="./javascript/index.js"></script>
