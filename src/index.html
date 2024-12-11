@@ -4,85 +4,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maestro Detalle</title>
+    <title>Maestro Detalle Nunchy</title>
 
     <!-- Bootstrap -->
-    <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css"
         integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-
-    <!-- Optional theme -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap-theme.min.css"
         integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
-
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"
-        integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
-        crossorigin="anonymous"></script>
 </head>
 
 <body>
 
-    <div id ="maestro">
-    <h1>Maestro</h1>
-    <p>
-        <button type="button" class="btn btn-primary btn-lg" id="botonRefrescar">Refrescar</button>
-        <button type="button" class="btn btn-default btn-lg" id="botonNuevo">Nuevo</button>
-    </p>
-    <!-- Los titulos de la tabla -->
-    <div class="row">
-        <div class="col-md-4">
-            <h4>NOMBRE</h4>
-        </div>
-        <div class="col-md-4">
-            <h4>APELLIDO</h4>
-        </div>
-        <div class="col-md-4">
-            <h4>ACCION</h4>
-        </div>
-    </div>
-    <hr>
-
-    <!-- Los nombres -->
-    <div class="row" id="listado">
-        <div class="col-md-4">
-            <h4> </h4>
-        </div>
-        <div class="col-md-4">
-            <h4> </h4>
-        </div>
-        <div class="col-md-4">
-            <button type="button" class="btn btn-default btn-lg">Borrar</button>
-        </div>
-    </div>
-
-</div>
-
-<div id="detalle">
-
-    <h1>Detalle</h1>
-
-
-    <form>
-        <div class="form-group row">
-            <label for="nombre" class="col-xs-6 col-md-4 control-label">Nombre</label>
-            <div class="col-xs-6 col-md-4">
-                <input type="text" class="form-control" id="nombre" placeholder="Escribe tu nombre">
+    <div id="maestro" class="container">
+        <h1>Maestro</h1>
+        <p>
+            <button type="button" class="btn btn-primary btn-lg" id="botonRefrescar">Refrescar</button>
+            <button type="button" class="btn btn-default btn-lg" id="botonNuevo">Nuevo</button>
+        </p>
+        <!-- Encabezados de la tabla -->
+        <div class="row">
+            <div class="col-md-4">
+                <h4>NOMBRE</h4>
+            </div>
+            <div class="col-md-4">
+                <h4>APELLIDO</h4>
+            </div>
+            <div class="col-md-4">
+                <h4>ACCIÓN</h4>
             </div>
         </div>
+        <hr>
 
-        <div class="form-group row">
-            <label for="nombre" class="col-xs-6 col-md-4 control-label">Apellido</label>
-            <div class="col-xs-6 col-md-4">
-                <input type="text" class="form-control" id="nombre" placeholder="Escribe tu nombre">
-            </div>
+        <!-- Contenedor para las filas generadas dinámicamente -->
+        <div id="listado" class="registro">        
         </div>
-    </form>
-</div>
+        <div id="registroSeleccionado"></div>
 
+    </div>
 
+    <!-- Contenedores de detalle -->
+    <div id="detalle" class="container" style="display: none;">
+        <h1>Detalle</h1>
 
-    <script src="../node_modules/jquery/dist/jquery.js"></script>
+        <form>
+            <div class="form-group row">
+                <label for="nombre" class="col-md-4 control-label">Nombre</label>
+                <div class="col-md-8">
+                    <input type="text" class="form-control" id="nombre">
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="apellido" class="col-md-4 control-label">Apellido</label>
+                <div class="col-md-8">
+                    <input type="text" class="form-control" id="apellido">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <button class="btn btn-primary btn-lg" id="botonGuardar">Guardar</button>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-primary btn-lg" id="botonCancelar">Cancelar</button> 
+                </div>
+                
+            </div>
+        </form>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"
+        integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
     <script src="./javascript/index.js"></script>
 </body>
 

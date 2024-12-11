@@ -1,125 +1,226 @@
 const EstadoPagina = {
-    CARGANDO: 'Cargando',    // El estado cuando se están cargando los datos.
-    REFRESCANDO: 'Refrescando', // El estado cuando se hace clic en "Refrescar".
-    MOSTRANDO: 'Mostrando', // El estado cuando los datos se muestran correctamente.
-    EDITANDO: 'Editando', // El estado cuando un detalle está siendo editado.
-    BORRANDO: 'Borrando', // El estado cuando se está borrando un registro.
-    INICIAL: 'Inicial' // Estado inicial de la página
-}; 
+    CARGANDO: 'Cargando',
+    REFRESCANDO: 'Refrescando',
+    MOSTRANDO: 'Mostrando',
+    EDITANDO: 'Editando',
+    BORRANDO: 'Borrando',
+    INICIAL: 'Inicial',
+};
 
-let estado = EstadoPagina.INICIAL;  // Estado inicial de la página
- 
+let estado = EstadoPagina.INICIAL; // Estado inicial
+
+// Ocultar el contenedor de detalle al cargar la página
+$("#detalle").hide();
+
 
 $(function () {
-  
+    function mostrarCargando() {
+        // Limpiar el contenedor de listado
+        $("#listado").empty();
 
-     // Ocultar el contenedor de detalle al cargar la página
-     $("#detalle").hide();
+        // Crear y agregar el mensaje de "Cargando..."
+        const cargandoRow = `
+            <div class="row" id="cargandoRow">
+                <div class="col-md-4">
+                    <h4>Cargando...</h4>
+                </div>
+                <div class="col-md-4">
+                    <h4>Cargando...</h4>
+                </div>
+                <div class="col-md-4">
+                    <h4>Cargando...</h4>
+                </div>
+            </div>
+        `;
+        $("#listado").append(cargandoRow);
+    }
 
-      // Agregar la fila de "Cargando"
-        if (estado === EstadoPagina.REFRESCANDO || estado === EstadoPagina.CARGANDO) {
-            const cargandoRow = `
-                <div class="row" id="cargandoRow">
-                    <div class="col-md-12">
-                        <h4>Cargando, Cargando, Cargando...</h4>
+    function ocultarCargando() {
+        // Eliminar el mensaje de "Cargando..."
+        $("#cargandoRow").remove();
+    }
+
+    function cargarListado(data) {
+        $("#listado").empty(); // Limpia el contenedor
+
+        // Itera sobre los datos y genera las filas dinámicamente
+        data.forEach(function (registro) {
+            const row = `
+                <div class="row" data-id="${registro.id}" data-nombre="${registro.nombre}" data-apellido="${registro.apellido}">
+                    <div class="col-md-4">
+                        <h4>${registro.nombre}</h4>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>${registro.apellido}</h4>
+                    </div>
+                    <div class="col-md-4">
+                         <button type="button" class="btn btn-default btn-lg botonBorrar" data-id="${registro.id}">Borrar</button>
                     </div>
                 </div>
             `;
-            // Agregar la fila de carga al principio del listado
-            $("#listado").prepend(cargandoRow);
+            $("#listado").append(row);
+        });
+    }
+
+    // Función para cargar datos desde el servidor
+    function obtenerDatos() {
+        estado = EstadoPagina.CARGANDO;
+        console.log("Estado actual:", estado);
+
+        // Mostrar el mensaje de cargando
+        mostrarCargando();
+
+        $.get("https://my-json-server.typicode.com/desarrollo-seguro/dato/solicitudes")
+            .done(function (data) {
+                estado = EstadoPagina.MOSTRANDO;
+                console.log("Datos recibidos:", data);
+
+                // Ocultar el mensaje de cargando
+                ocultarCargando();
+
+                // Cargar los datos en el listado
+                cargarListado(data);
+            })
+            .fail(function () {
+                estado = EstadoPagina.INICIAL;
+                console.error("Error al obtener datos.");
+                ocultarCargando(); // Asegurarse de ocultar el mensaje si ocurre un error
+                alert("No se pudo obtener los datos. Inténtalo de nuevo.");
+            });
+    }
+
+    // Cargar registros al inicio
+    obtenerDatos();
+
+    // Botón REFRESCAR
+    $("#botonRefrescar").on("click", function () {
+        estado = EstadoPagina.REFRESCANDO;
+        console.log("Estado actual:", estado);
+        $("#detalle").hide();
+        // Mostrar el mensaje de cargando
+        mostrarCargando();
+        obtenerDatos();
+    });
+
+    // Botón NUEVO
+    $("#botonNuevo").on("click", function () {
+        estado = EstadoPagina.EDITANDO;
+        console.log("Estado actual:", estado);
+        $("#nombre").val("");
+        $("#apellido").val("")
+        $("#detalle").show(); // Mostrar el formulario de detalle
+    });
+
+    // Evento para el botón BORRAR
+    $("#listado").on("click", ".botonBorrar", function (e) {
+        e.stopPropagation();
+        estado = EstadoPagina.BORRANDO;
+        console.log("Estado actual:", estado);
+
+        $("#detalle").hide(); 
+        mostrarCargando();
+        console.log("Estado actual:", estado);
+
+
+
+        const id = $(this).data("id");
+        $.ajax({
+            url: `https://my-json-server.typicode.com/desarrollo-seguro/dato/solicitudes/${id}`,
+            type: 'DELETE',
+            success: function () {
+                console.log(`Registro ${id} borrado.`);
+                estado = EstadoPagina.MOSTRANDO;
+                obtenerDatos(); // Refrescar listado
+            },
+            error: function () {
+                console.error(`Error al intentar borrar el registro ${id}`);
+                estado = EstadoPagina.MOSTRANDO; // Volvemos al estado mostrando aunque haya error
+            },
+        });
+    });
+
+    //  Seleccionar un registro para editar
+    $("#listado").on("click", ".row[data-nombre][data-apellido][data-id]", function () {
+        estado = EstadoPagina.EDITANDO;
+
+        const nombre = $(this).data("nombre");
+        const apellido = $(this).data("apellido");
+        const id = $(this).data("id");
+        $("#registroSeleccionado").data("id", id);
+
+        // Rellenar los campos del formulario con los datos seleccionados
+        $("#nombre").val(nombre);
+        $("#apellido").val(apellido);
+
+        // Mostrar el contenedor de detalle
+        $("#detalle").show();
+    });
+
+    // Evento botón GUARDAR  
+    $("#botonGuardar").on("click", function (e) {
+        e.preventDefault();
+
+        const id = $("#registroSeleccionado").data("id");
+        const nombre = $("#nombre").val();
+        const apellido = $("#apellido").val();
+
+        const datos = {
+            nombre: nombre,
+            apellido: apellido
+        };
+        if (id === undefined) {
+            // Si el ID no está definido es una nueva operación POST
+            $.ajax({
+                url: "https://my-json-server.typicode.com/desarrollo-seguro/dato/solicitudes",
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(datos),
+                success: function (response) {
+                    console.log("Registro creado exitosamente:", response);
+                    alert("Guardado con éxito");
+                    estado = EstadoPagina.MOSTRANDO;
+                    $("#detalle").hide(); // Ocultar el detalle
+                    obtenerDatos(); // Refrescar listado
+                },
+                error: function (error) {
+                    console.error("Error al guardar datos:", error);
+                    alert("Error al guardar los datos.");
+                }
+            });
+        } else {
+            // Si el ID está definido, es una operación PUT para editar el registro existente
+            $.ajax({
+                url: `https://my-json-server.typicode.com/desarrollo-seguro/dato/solicitudes/${id}`,
+                method: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(datos),
+                success: function (datos) {
+                    console.log("Datos guardados exitosamente:", datos);
+                    estado = EstadoPagina.MOSTRANDO;
+                    alert("Guardado con éxito");
+                    $("#detalle").hide(); // Ocultar el detalle
+                    obtenerDatos(); // Refrescar listado
+                },
+                error: function (error) {
+                    console.error("Error al guardar datos:", error);
+                    alert("Error al guardar los datos.");
+                }
+            });
         }
- 
-     // Cargar los registros de inicio al cargar la página
-     $.get("https://my-json-server.typicode.com/desarrollo-seguro/dato/solicitudes")
-         .done(function (data) {
-             estado = EstadoPagina.MOSTRANDO;  // Cambiar el estado a MOSTRANDO
- 
-             // Si el GET es exitoso, actualiza el listado
-             console.log("Datos recibidos:", data);
-             $("#listado").empty(); // Limpiamos el listado antes de agregar nuevos registros
- 
-             // Iteramos sobre los datos y los mostramos en la tabla
-             data.forEach(function (registro) {
-                 var row = `
-                     <div class="row">
-                         <div class="col-md-4">
-                             <h4>${registro.nombre}</h4>
-                         </div>
-                         <div class="col-md-4">
-                             <h4>${registro.apellido}</h4>
-                         </div>
-                         <div class="col-md-4">
-                             <button type="button" class="btn btn-default btn-lg" data-id="${registro.id}" id="botonBorrar">Borrar</button>
-                         </div>
-                     </div>
-                 `;
-                 $("#listado").append(row);
-             });
-         })
-         .fail(function () {
-             console.error("Error al obtener datos del botón refrescar");
-         });
- 
-     // Evento del botón 1: REFRESCAR
-     $("#botonRefrescar").on("click", function () {
-         estado = EstadoPagina.REFRESCANDO; // Cambiar el estado a REFRESCANDO
-         console.log("Estado actual:", estado);
- 
-         $.get("https://my-json-server.typicode.com/desarrollo-seguro/dato/solicitudes")
-             .done(function (data) {
-                 estado = EstadoPagina.MOSTRANDO; // Cambiar el estado a MOSTRANDO
-                 console.log("Datos recibidos:", data);
-                 $("#listado").empty(); // Limpiamos el listado antes de agregar nuevos registros
- 
-                 // Iteramos sobre los datos y los mostramos en la tabla
-                 data.forEach(function (registro) {
-                     var row = `
-                         <div class="row">
-                             <div class="col-md-4">
-                                 <h4>${registro.nombre}</h4>
-                             </div>
-                             <div class="col-md-4">
-                                 <h4>${registro.apellido}</h4>
-                             </div>
-                             <div class="col-md-4">
-                                 <button type="button" class="btn btn-default btn-lg" data-id="${registro.id}" id="botonBorrar">Borrar</button>
-                             </div>
-                         </div>
-                     `;
-                     $("#listado").append(row);
-                 });
-             })
-             .fail(function () {
-                 estado = EstadoPagina.INICIAL; // Volver al estado inicial si la petición falla
-                 console.error("Error al obtener datos del botón refrescar");
-             });
-     });
- 
-     // Evento para el botón NUEVO (para crear un nuevo registro o ir a una vista de edición)
-     $("#botonNuevo").on("click", function () {
-         estado = EstadoPagina.EDITANDO; // Cambiar el estado a EDITANDO
-         console.log("Estado actual:", estado);
- 
-         // Mostrar el formulario de detalle
-         $("#detalle").show();
-     });
- 
-     // Evento para el botón BORRAR (cuando se elimina un registro)
-     $("#listado").on("click", "#botonBorrar", function () {
-         estado = EstadoPagina.BORRANDO; // Cambiar el estado a BORRANDO
-         console.log("Estado actual:", estado);
- 
-         // Borrar el registro (suponiendo que llamamos a un endpoint de eliminación)
-         const id = $(this).data("id");
-         $.ajax({
-             url: `https://my-json-server.typicode.com/desarrollo-seguro/dato/solicitudes/${id}`,
-             type: 'DELETE',
-             success: function () {
-                 console.log(`Registro ${id} borrado`);
-                 estado = EstadoPagina.MOSTRANDO; // Cambiar al estado MOSTRANDO después de eliminar
-                 // Actualizar la lista después de borrar
-                 $("#botonRefrescar").click(); // Simulamos hacer clic en "Refrescar"
-             }
-         });
-     });
- });
+
+    });
+
+    // Evento para el botón CANCELAR
+    $("#botonCancelar").on("click", function (e) {
+        e.preventDefault();
+        estado = EstadoPagina.INICIAL;
+
+        // Ocultar el contenedor de detalle y limpiar el formulario
+        $("#detalle").hide();
+        $("#nombre").val("");
+        $("#apellido").val("");
+    });
+
+
+});
+
